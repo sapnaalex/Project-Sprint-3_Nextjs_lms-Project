@@ -18,7 +18,7 @@ A full-stack Learning Management System built using Next.js, MongoDB, and Tailwi
 ## Setup Instructions
 
 ```bash
-git clone https://github.com/yourusername/lms-project.git
+git clone https://github.com/sapnaalex/Project-Sprint-3_Nextjs_lms-Project.git
 cd lms-project
 npm install
 npm run dev
