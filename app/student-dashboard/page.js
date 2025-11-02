@@ -1,7 +1,5 @@
 import StudentDashboardPage from "@/components/page/student-dashboard";
 
-const StudentDashboard = () => {
+export default function Page() {
   return <StudentDashboardPage />;
-};
-
-export default StudentDashboard; 
+}

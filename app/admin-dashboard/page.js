@@ -1,7 +1,5 @@
-import DashboardPage from "@/components/page/dashboard-page";
+import AdminDashboardPage from "@/components/page/dashboard-page";
 
-const AdminDashboardPage = () => {
-  return <DashboardPage />;
-};
-
-export default AdminDashboardPage;
+export default function Page() {
+  return <AdminDashboardPage />;
+}
