@@ -1,6 +1,6 @@
 // /app/layout.js
 import connectToDatabase from '../utils/mongodb';
-import User from './models/User';
+import User from '../models/User';
 import './globals.css';
 
 export const metadata = {

@@ -1,159 +1,91 @@
-"use client"
-import React, { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import Navbar from '../../components/layout/navbar';
-import InputField from '../../components/global/input-field';
-import Button from '../../components/global/button';
+'use client';
+import { useState } from 'react';
 
-const SignupPage = () => {
-  const [form, setForm] = useState({ 
-    email: '', 
-    password: '', 
-    name: '', 
-    role: 'student' 
+export default function SignupPage() {
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    password: '',
+    role: 'student',
   });
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const router = useRouter();
-
-  const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-    setError('');
-    setSuccess('');
-  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     setSuccess('');
-    
-    if (!form.email || !form.password || !form.name || !form.role) {
-      setError('All fields are required.');
-      return;
-    }
-    
-    setIsLoading(true);
-    
+
     try {
       const response = await fetch('/api/register', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(form),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
       });
 
       const data = await response.json();
 
       if (!response.ok) {
         setError(data.error || 'Registration failed');
-        return;
+        return; // ✅ valid inside a function
       }
 
-      setSuccess('Registration successful! Redirecting to login...');
-      
-      // Redirect to login page after 2 seconds
-      setTimeout(() => {
-        router.push('/signin');
-      }, 2000);
+      setSuccess(data.message || 'Registration successful!');
 
+      // Optionally redirect after success
+      setTimeout(() => {
+        const dashboard = formData.role === 'admin' ? '/admin_dashboard' : '/student_dashboard';
+        window.location.href = dashboard;
+      }, 2000);
     } catch (err) {
-      setError('An unexpected error occurred.');
       console.error(err);
-    } finally {
-      setIsLoading(false);
+      setError('An error occurred. Please try again.');
     }
   };
 
   return (
-    <>
-      <Navbar />
-      <div className="max-w-md mx-auto mt-16 bg-white">
-        <form onSubmit={handleSubmit} className="bg-white p-8 rounded shadow-md">
-          <h2 className="text-2xl text-black font-bold mb-6 text-center">Sign Up</h2>
-          
-          {error && (
-            <div className="mb-4 text-red-600 text-center text-sm" role="alert">
-              {error}
-            </div>
-          )}
-          
-          {success && (
-            <div className="mb-4 text-green-600 text-center text-sm" role="alert">
-              {success}
-            </div>
-          )}
-          
-          <InputField
-            label="Full Name"
-            name="name"
-            type="text"
-            value={form.name}
-            onChange={handleChange}
-            placeholder="Enter your full name"
-            disabled={isLoading}
-            required
-          />
-          
-          <InputField
-            label="Email"
-            name="email"
-            type="email"
-            value={form.email}
-            onChange={handleChange}
-            placeholder="Enter your email"
-            disabled={isLoading}
-            required
-          />
-          
-          <InputField
-            label="Password"
-            name="password"
-            type="password"
-            value={form.password}
-            onChange={handleChange}
-            placeholder="Enter your password (min 6 characters)"
-            disabled={isLoading}
-            required
-          />
-          
-          <div className="mb-6">
-            <label htmlFor="role" className="block text-gray-700 mb-2">
-              Role
-            </label>
-            <select
-              id="role"
-              name="role"
-              value={form.role}
-              onChange={handleChange}
-              className="w-full px-3 py-2 text-black border rounded focus:outline-none focus:ring focus:border-blue-300 disabled:opacity-50"
-              disabled={isLoading}
-              required
-            >
-              <option value="student">Student</option>
-              <option value="admin">Admin</option>
-            </select>
-          </div>
-          
-          <Button type="submit" disabled={isLoading}>
-            {isLoading ? 'Creating Account...' : 'Sign Up'}
-          </Button>
-          
-          <div className="mt-4 text-center text-sm text-gray-600">
-            Already have an account?{' '}
-            <button
-              type="button"
-              onClick={() => router.push('/signin')}
-              className="text-blue-600 hover:text-blue-800 underline"
-            >
-              Sign In
-            </button>
-          </div>
-        </form>
-      </div>
-    </>
-  );
-};
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
+      <h1 className="text-2xl font-bold mb-4">Signup</h1>
 
-export default SignupPage; 
+      <form onSubmit={handleSubmit} className="bg-white p-6 rounded shadow-md w-80">
+        <input
+          type="text"
+          placeholder="Name"
+          className="border p-2 w-full mb-3"
+          value={formData.name}
+          onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+        />
+        <input
+          type="email"
+          placeholder="Email"
+          className="border p-2 w-full mb-3"
+          value={formData.email}
+          onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+        />
+        <input
+          type="password"
+          placeholder="Password"
+          className="border p-2 w-full mb-3"
+          value={formData.password}
+          onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+        />
+
+        <select
+          className="border p-2 w-full mb-3"
+          value={formData.role}
+          onChange={(e) => setFormData({ ...formData, role: e.target.value })}
+        >
+          <option value="student">Student</option>
+          <option value="admin">Admin</option>
+        </select>
+
+        <button type="submit" className="bg-blue-500 text-white py-2 w-full rounded hover:bg-blue-600">
+          Register
+        </button>
+      </form>
+
+      {error && <p className="text-red-500 mt-3">{error}</p>}
+      {success && <p className="text-green-500 mt-3">{success}</p>}
+    </div>
+  );
+}
